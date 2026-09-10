@@ -1,7 +1,8 @@
 import subprocess
 import ast
 import sys
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import read_file, write_file
 
@@ -96,7 +97,8 @@ def generate_fix_suggestion(state: dict, test_result: str, code_file: str) -> st
     
     code_content = read_file.invoke({"filepath": code_file})
     
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+    #llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+    llm = ChatOllama(model="llama3.2:3b", temperature=0)
     
     messages = [
         SystemMessage(content="""You are a Code Fixer AI.
