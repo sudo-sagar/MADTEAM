@@ -2,7 +2,8 @@ import subprocess
 import ast
 import sys
 #from langchain_openai import ChatOpenAI
-from langchain_community.chat_models import ChatOllama
+#from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import read_file, write_file
 
