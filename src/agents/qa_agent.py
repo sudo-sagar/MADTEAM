@@ -161,3 +161,24 @@ def analyze_code_quality(code_file: str) -> str:
     analysis.append(f"📏 Code size: {lines} lines")
     
     return "\n".join(analysis) if analysis else "✅ No issues detected in static analysis"
+    
+    
+def visual_qa_agent(state):
+    """Self-healing for visual/UI changes"""
+    # Use screenshot comparison
+    # If UI changes, auto-generate new selectors
+    pass
+
+def performance_qa_agent(state):
+    """Self-healing for performance issues"""
+    # Run load tests
+    # If slow, suggest optimizations
+    pass
+
+def security_qa_agent(state):
+    """Self-healing for security issues"""
+    # Run vulnerability scan
+    # If vulnerabilities found, auto-patch
+    pass
+
+
