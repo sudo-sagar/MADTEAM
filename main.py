@@ -19,8 +19,8 @@ def main():
         "iteration": 0,
         "max_iterations": 3,
         "messages": [],
-        "is_ready": False
-    }
+        "is_ready": False  
+        }
     
     print("🚀 Starting Self-Healing Multi-Agent Dev Team...")
     print(f"📋 Requirement: {initial_state['requirement']}")
