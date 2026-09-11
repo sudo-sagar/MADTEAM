@@ -1,4 +1,5 @@
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import write_file, read_file
 
@@ -19,7 +20,8 @@ def coder_agent(state: dict) -> dict:
         error_context = ""
         existing_code = ""
     
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+    #llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+    llm = ChatOllama(model="llama3.2:3b", temperature=0)
     
     # Build the prompt
     if is_fix:
