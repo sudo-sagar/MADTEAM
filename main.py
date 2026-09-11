@@ -32,7 +32,7 @@ def main():
     print("=" * 60)
     print("\n📊 FINAL STATUS:")
     print(f"   Iterations: {final_state['iteration']}")
-    print(f"   Production Ready: {'✅ YES' if final_state['is_ready'] else '❌ NO'}")
+    print(f"   Production Ready: {'✅ YES' if final_state['is_ready'] else 'NO'}")
     
     if final_state['is_ready']:
         print("\n🎉 SUCCESS: Code passed all tests and is production-ready!")
