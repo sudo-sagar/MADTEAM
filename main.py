@@ -12,7 +12,7 @@ def main():
     
     # Test with a requirement that might initially fail
     initial_state: ProjectState = {
-        "requirement": "Create a function that validates email addresses. It should return True for valid emails and False for invalid ones. Handle empty strings, None values, and common edge cases.",
+        "requirement": "Write a Python function `validate_email(email) -> bool` that returns True for valid email addresses and **False for ALL invalid inputs**.This includes empty strings, None, non-string types, and malformed addresses. The function must NEVER raise an exception — every invalid input returns False. Do not add an `if __name__ == '__main__'` block.",
         "task_plan": "",
         "code_file": "",
         "test_results": "",
