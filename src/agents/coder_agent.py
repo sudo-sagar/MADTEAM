@@ -100,7 +100,8 @@ def generate_tests(llm, requirement: str, code: str) -> str:
     print("🧪 [Coder] Generating tests...")
     
     messages = [
-        SystemMessage(content="""You are a QA Engineer. Generate comprehensive pytest test cases that cover:
+        SystemMessage(content="""You are a QA Engineer. 
+        Generate comprehensive pytest test cases that cover:
         - Happy path (valid emails return True)
         - Invalid emails return False (NOT exceptions)
         - Empty string returns False
