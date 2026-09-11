@@ -113,7 +113,7 @@ def generate_tests(llm, requirement: str, code: str) -> str:
         - Tests must import from `solution` — NOT `your_module`.
         - Test contract: validate_email returns bool. Never expect exceptions.
         - Do NOT use `pytest.raises` for invalid input.
-        - Return ONLY test code, no explanations.""")
+        - Return ONLY test code, no explanations."""),
         
         HumanMessage(content=f"""
         REQUIREMENT: {requirement}
