@@ -68,30 +68,20 @@ def qa_agent(state: dict) -> dict:
                 }]
             }
 
-def run_pytest_with_coverage(test_file: str) -> str:
-    """Run pytest with coverage reporting"""
+def run_pytest_with_coverage(test_file: str) -> tuple[bool, str]:
+    """Run pytest and return (passed, output)."""
     try:
-        # Run tests with verbose output
         result = subprocess.run(
-            ["pytest", test_file, "-v", "--tb=short"],
+            [sys.executable, "-m", "pytest", test_file, "-v"],
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
         )
-        
-        if result.returncode == 0:
-            return "✅ ALL TESTS PASSED"
-        else:
-            # Extract the most useful error messages
-            output = result.stdout + result.stderr
-            # Truncate to keep it manageable
-            if len(output) > 2000:
-                output = output[:2000] + "... (truncated)"
-            return f"❌ TESTS FAILED:\n{output}"
+        return result.returncode == 0, result.stdout + result.stderr
     except subprocess.TimeoutExpired:
-        return "⚠️ Tests timed out after 30 seconds"
+        return False, "Tests timed out after 30 seconds"
     except Exception as e:
-        return f"⚠️ Error running tests: {str(e)}"
+        return False, f"Error running tests: {str(e)}"
 
 def generate_fix_suggestion(state: dict, test_result: str, code_file: str) -> str:
     """Use LLM to generate a fix for the failing tests"""
