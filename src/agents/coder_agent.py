@@ -1,4 +1,5 @@
 #from langchain_openai import ChatOpenAI
+import re
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import write_file, read_file
@@ -26,14 +27,14 @@ def coder_agent(state: dict) -> dict:
     # Build the prompt
     if is_fix:
         messages = [
-            SystemMessage(content="""You are a Senior Software Engineer specializing in self-healing code.
-            
-            **CRITICAL INSTRUCTION**: 
-            1. Read the test failure logs carefully
-            2. Fix ONLY the issues mentioned in the errors
-            3. Do NOT change working code
-            4. Return the COMPLETE fixed code (not just the fix)
-            5. Ensure all imports and dependencies are included"""),
+            SystemMessage(content="""You are a Senior Software Engineer. Write clean, production-ready Python code that follows best practices. Include docstrings and type hints.
+
+            CRITICAL RULES:
+            1. Follow the requirement EXACTLY. If it says "return False for invalid input",return False — do NOT raise exceptions.
+            2. Never raise exceptions unless the requirement explicitly asks for it.
+            3. Do NOT add `if __name__ == '__main__'` blocks or example usage.
+            4. Write ONLY the function(s) the requirement asks for.
+            5. No print statements unless the requirement asks for output."""),
             
             HumanMessage(content=f"""
             ORIGINAL REQUIREMENT: {state['requirement']}
@@ -99,14 +100,19 @@ def generate_tests(llm, requirement: str, code: str) -> str:
     print("🧪 [Coder] Generating tests...")
     
     messages = [
-        SystemMessage(content="""You are a QA Engineer.
-        Generate comprehensive pytest test cases that cover:
-        - Happy path
-        - Edge cases
-        - Error handling
-        - Boundary conditions
-        Return ONLY the test code, no explanations.
-        Use pytest fixtures if appropriate."""),
+        SystemMessage(content="""You are a QA Engineer. Generate comprehensive pytest test cases that cover:
+        - Happy path (valid emails return True)
+        - Invalid emails return False (NOT exceptions)
+        - Empty string returns False
+        - None returns False
+        - Non-string types return False
+        - Boundary cases
+
+        CRITICAL:
+        - Tests must import from `solution` — NOT `your_module`.
+        - Test contract: validate_email returns bool. Never expect exceptions.
+        - Do NOT use `pytest.raises` for invalid input.
+        - Return ONLY test code, no explanations.""")
         
         HumanMessage(content=f"""
         REQUIREMENT: {requirement}
@@ -126,5 +132,31 @@ def generate_tests(llm, requirement: str, code: str) -> str:
         test_code = test_code.split("```python")[1].split("```")[0].strip()
     elif "```" in test_code:
         test_code = test_code.split("```")[1].split("```")[0].strip()
-    
-    return test_code
+
+    # Remove any import lines the LLM snuck in — we replace them with the correct one.
+    lines = test_code.splitlines()
+    cleaned_lines = []
+    for line in lines:
+        stripped = line.strip()
+        # Drop lines that try to import the function from a guessed module
+        if re.match(r"^(from|import)\s+\S+", stripped) and "import" in stripped:
+            # Keep stdlib imports the tests might legitimately need
+            if any(
+                keep in stripped
+                for keep in ("import pytest", "import re", "import sys", "import os")
+            ):
+                cleaned_lines.append(line)
+            else:
+                continue
+        else:
+            cleaned_lines.append(line)
+    test_code = "\n".join(cleaned_lines).strip()
+
+    # Force the correct import header
+    header = (
+        "import sys, os\n"
+        "sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'code'))\n"
+        "from solution import validate_email\n\n"
+    )
+
+    return header + test_code
