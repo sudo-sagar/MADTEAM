@@ -9,20 +9,20 @@ from src.tools.file_tools import read_file, write_file
 def qa_agent(state: dict) -> dict:
     """Self-Healing QA Agent: Tests code and auto-generates fixes"""
     print("\n🔍 [QA] Running comprehensive validation...")
-    
+
     test_file = "workspace/tests/test_code.py"
     code_file = state.get("code_file", "")
-    
-    # Run the actual tests
-    test_result = run_pytest_with_coverage(test_file)
-    
-    if "ALL TESTS PASSED" in test_result:
+
+    # Run the actual tests — now returns (passed: bool, output: str)
+    passed, test_result = run_pytest_with_coverage(test_file)
+
+    if passed:
         print("✅ QA: All tests passed! Code is production-ready.")
-        
+
         # Bonus: Run static analysis
         static_analysis = analyze_code_quality(code_file)
         print(f"📊 Static Analysis Results:\n{static_analysis}")
-        
+
         return {
             **state,
             "test_results": test_result,
@@ -34,37 +34,39 @@ def qa_agent(state: dict) -> dict:
         }
     else:
         print("❌ QA: Tests failed! Generating self-healing fixes...")
-        
-        # 🔥 SELF-HEALING: Generate a fix suggestion
-        suggested_fix = generate_fix_suggestion(state, test_result, code_file)
-        
-        # Update the code with the suggested fix
-        if suggested_fix:
+        print("🧠 [QA] Analyzing failures and suggesting fixes...")
+
+        fixed_code = generate_fix_suggestion(state, test_result, code_file)
+
+        if fixed_code:
             print("🔧 [QA] Applying self-healing fix...")
-            write_file.invoke({"filepath": code_file, "content": suggested_fix})
-            
-            # Re-test with the fix
+            write_file.invoke({"filepath": code_file, "content": fixed_code})
+
+            # Re-run tests after the fix
             print("🔄 [QA] Re-testing with fix...")
-            re_test_result = run_pytest_with_coverage(test_file)
-            
-            if "ALL TESTS PASSED" in re_test_result:
-                print("✅ QA: Self-healing succeeded!")
-                return {
-                    **state,
-                    "test_results": re_test_result,
-                    "is_ready": True,
-                    "messages": state.get("messages", []) + [{
-                        "role": "qa",
-                        "content": "✅ Self-healed code successfully"
-                    }]
-                }
-        
-        return {
-            **state,
-            "test_results": test_result,
-            "is_ready": False,
-            "iteration": state.get("iteration", 0) + 1
-        }
+            passed_after_fix, test_result_after_fix = run_pytest_with_coverage(test_file)
+
+            return {
+                **state,
+                "test_results": test_result_after_fix,
+                "is_ready": passed_after_fix,
+                "iteration": state.get("iteration", 0) + 1,
+                "messages": state.get("messages", []) + [{
+                    "role": "qa",
+                    "content": "Tests passed after self-healing" if passed_after_fix
+                               else "Tests still failing after self-healing"
+                }]
+            }
+        else:
+            return {
+                **state,
+                "test_results": test_result,
+                "iteration": state.get("iteration", 0) + 1,
+                "messages": state.get("messages", []) + [{
+                    "role": "qa",
+                    "content": "Could not generate a fix"
+                }]
+            }
 
 def run_pytest_with_coverage(test_file: str) -> str:
     """Run pytest with coverage reporting"""
