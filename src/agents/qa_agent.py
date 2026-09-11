@@ -1,9 +1,7 @@
 import subprocess
 import ast
 import sys
-#from langchain_openai import ChatOpenAI
-#from langchain_community.chat_models import ChatOllama
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import read_file, write_file
 
@@ -98,8 +96,7 @@ def generate_fix_suggestion(state: dict, test_result: str, code_file: str) -> st
     
     code_content = read_file.invoke({"filepath": code_file})
     
-    #llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
-    llm = ChatOllama(model="llama3.2:3b", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
     
     messages = [
         SystemMessage(content="""You are a Code Fixer AI.
@@ -164,24 +161,3 @@ def analyze_code_quality(code_file: str) -> str:
     analysis.append(f"📏 Code size: {lines} lines")
     
     return "\n".join(analysis) if analysis else "✅ No issues detected in static analysis"
-    
-    
-def visual_qa_agent(state):
-    """Self-healing for visual/UI changes"""
-    # Use screenshot comparison
-    # If UI changes, auto-generate new selectors
-    pass
-
-def performance_qa_agent(state):
-    """Self-healing for performance issues"""
-    # Run load tests
-    # If slow, suggest optimizations
-    pass
-
-def security_qa_agent(state):
-    """Self-healing for security issues"""
-    # Run vulnerability scan
-    # If vulnerabilities found, auto-patch
-    pass
-
-
