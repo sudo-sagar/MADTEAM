@@ -3,6 +3,7 @@ import operator
 
 class ProjectState(TypedDict):
     """The state that flows through your multi-agent system"""
+    run_id: str                         # NEW: Track which run this is    
     requirement: str                    # User's request
     task_plan: str                      # PM's decomposition
     code_file: str                      # Where code is saved
