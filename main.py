@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from src.graph import app
 from src.state import ProjectState
 import os
+import uuid
 
 load_dotenv()
 
@@ -12,6 +13,7 @@ def main():
     
     # Test with a requirement that might initially fail
     initial_state: ProjectState = {
+        "run_id": str(uuid.uuid4()),
         "requirement": "Write a Python function `validate_email(email) -> bool` that returns True for valid email addresses and **False for ALL invalid inputs**.This includes empty strings, None, non-string types, and malformed addresses. The function must NEVER raise an exception — every invalid input returns False. Do not add an `if __name__ == '__main__'` block.",
         "task_plan": "",
         "code_file": "",
