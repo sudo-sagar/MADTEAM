@@ -4,6 +4,14 @@ from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.tools.file_tools import write_file, read_file
 from src.db import append_event
+from typing import Any, Dict
+
+def _extract_code(text: str) -> str:
+    """Pull the code out of a Markdown fenced block, or return the text as-is."""
+    m = re.search(r"```[a-zA-Z0-9_+-]*\s*\n(.*?)```", text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    return text.replace("```python", "").replace("```", "").strip()
 
 def coder_agent(state: dict) -> dict:
     """Coder Agent: Writes code and self-corrects based on QA/Visual/Security/Perf feedback."""
@@ -115,18 +123,23 @@ def coder_agent(state: dict) -> dict:
     
     response = llm.invoke(messages)
     code_content = response.content
-    
+
     # Extract code from markdown if present
+    code_content = _extract_code(code_content)
     '''
     if "```python" in code_content:
         code_content = code_content.split("```python")[1].split("```")[0].strip()
     elif "```" in code_content:
         code_content = code_content.split("```")[1].split("```")[0].strip()
-    '''
+    
+    code_content = _extract_code(code_content)
     if "python" in code_content: 
-        code_content = code_content.split("python", 1)[1].split("", 1)[0].strip()
+        #code_content = code_content.split("python", 1)[1].split("", 1)[0].strip()
+        
+        #code_content = code_content.split("```python", 1)[1].split("```", 1)[0].strip()
     elif "" in code_content:
         code_content = code_content.split("", 1)[1].split("", 1)[0].strip()
+    '''
     
     # Write the file
     filepath = "workspace/code/solution.py"
