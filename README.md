@@ -6,6 +6,8 @@ Most AI code generators stop at "it works on my machine." This project runs the 
 
 ## Architecture
 
+```mermaid
+graph TD
     Start([User Requirement]) --> PM[PM Agent]
     PM --> Coder[Coder Agent]
     Coder --> QA[QA Agent<br/>6 validation layers]
@@ -15,7 +17,9 @@ Most AI code generators stop at "it works on my machine." This project runs the 
     Visual -->|Fail| Coder
     Security -->|Clean| Done([Production Ready])
     Security -->|Vulnerable| Coder
+```
 
+GitHub renders Mermaid diagrams natively. This is worth adding — interviewers love visual architecture.
 ## Tech Stack
 
 - **Orchestration**: LangGraph (stateful multi-agent graphs)
