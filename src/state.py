@@ -1,14 +1,27 @@
 from typing import TypedDict, List, Annotated
 import operator
 
-class ProjectState(TypedDict):
-    """The state that flows through your multi-agent system"""
-    run_id: str                         # NEW: Track which run this is    
-    requirement: str                    # User's request
-    task_plan: str                      # PM's decomposition
-    code_file: str                      # Where code is saved
-    test_results: str                   # QA's test output
-    iteration: int                      # How many fix cycles
-    max_iterations: int                 # Max fix attempts (prevents infinite loops)
-    messages: Annotated[List[dict], operator.add]  # Conversation history
-    is_ready: bool                      # Production-ready flag
+class ProjectState(TypedDict, total=False):
+    run_id: str
+    requirement: str
+    task_plan: str
+    code_file: str
+    test_results: str
+    iteration: int
+    max_iterations: int
+    messages: Annotated[List[dict], operator.add]
+    is_ready: bool
+    regenerate_tests: bool       
+    last_failure_key: str         
+    app_url: str
+    visual_qa_result: str
+    visual_diff_pct: float
+    visual_analysis: str
+    security_result: str
+    security_patch: str
+    security_report: dict
+    performance_result: str
+    performance_patch: str
+    performance_violations: list
+    performance_analysis: str
+    performance_stats: dict
