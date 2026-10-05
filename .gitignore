@@ -1,9 +1,46 @@
-﻿.venv/
-venv/
-__pycache__/
-*.pyc
-*.pyo
+﻿# ─── Environment ───
 .env
-.vscode/
+.env.local
+.env.*.local
+
+# ─── Python ───
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
 .pytest_cache/
-workspace/
+.coverage
+htmlcov/
+
+# ─── Runtime artifacts (never commit these) ───
+workspace/code/
+workspace/tests/
+workspace/screenshots/
+workspace/baselines/
+workspace/diffs/
+workspace/rendered/
+workspace/security/
+workspace/perf/
+workspace/*.db
+workspace/*.sqlite
+workspace/*.sqlite3
+
+# ─── Playwright ───
+playwright-report/
+test-results/
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── OS ───
+.DS_Store
+Thumbs.db
+
+# ─── Model files (never commit LLM weights) ───
+*.gguf
+*.bin
+*.safetensors
