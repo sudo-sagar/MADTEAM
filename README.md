@@ -19,7 +19,6 @@ graph TD
     Security -->|Vulnerable| Coder
 ```
 
-GitHub renders Mermaid diagrams natively. This is worth adding — interviewers love visual architecture.
 ## Tech Stack
 
 - **Orchestration**: LangGraph (stateful multi-agent graphs)
